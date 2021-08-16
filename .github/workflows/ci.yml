@@ -46,4 +46,4 @@ jobs:
           context: image
           push: true
           tags: user/app:latest
-          build-args: 
+          build-args: ''
