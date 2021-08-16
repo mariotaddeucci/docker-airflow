@@ -1,5 +1,0 @@
-[
-    {"python":"3.7", "airflow": "2.1.2"},
-    {"python":"3.8", "airflow": "2.1.2"},
-    {"python":"3.9", "airflow": "2.1.2"}
-]
