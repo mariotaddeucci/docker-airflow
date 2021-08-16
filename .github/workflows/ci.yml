@@ -31,12 +31,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v2
-        with:
-          context: image
-          push: true
-          repository: ${{ secrets.DOCKERHUB_USERNAME }}/airflow
-          tags: ${{matrix.airflow}}-py${{matrix.python}}
-          build-args: |
-            AIRFLOW_V=${{matrix.airflow}}
-            PYTHON_V=${{matrix.python}}
+        run: |
+          docker build --build-arg AIRFLOW_V=2.1.2 --build-arg PYTHON_V=3.8 --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}} .
+          docker push
+        working-directory: image
