@@ -16,8 +16,13 @@ jobs:
     -  uses: actions/checkout@v2
     - id: set-matrix
       run: |
-        JSON=$(cat ./image/config.json)
-        echo "::set-output name=matrix::${JSON//'%'/'%25'}"
+          content=`cat ./image/config.json`
+          # the following lines are only required for multi line json
+          content="${content//'%'/'%25'}"
+          content="${content//$'\n'/'%0A'}"
+          content="${content//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=matrix::$content"
 
   docker:
     needs: params
