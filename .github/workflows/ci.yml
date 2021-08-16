@@ -9,7 +9,6 @@ on:
 
 jobs:
   docker:
-    needs: params
     runs-on: ubuntu-latest
     strategy:
       matrix: 
