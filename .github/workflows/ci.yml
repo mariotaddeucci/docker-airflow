@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - 'master'
-    paths:
-      - image/**
 
 jobs:
   docker:
@@ -35,7 +33,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
-          context: image
+          context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
           build-args: |
