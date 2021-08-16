@@ -31,6 +31,6 @@ jobs:
 
       - name: Build and push
         run: |
-          docker build --build-arg PYTHON_V=3.8 --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}} .
+          docker build --build-arg PYTHON_V=3.8 -t mariotaddeucci/airflow:${{matrix.airflow}}-py${{matrix.python}} .
           docker push
         working-directory: image
