@@ -35,5 +35,5 @@ jobs:
             --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}} \
             --build-arg PYTHON_V=${{matrix.python}} \
             --no-cache .
-          docker push
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}}
         working-directory: image
