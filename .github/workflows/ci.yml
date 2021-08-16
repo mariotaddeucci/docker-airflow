@@ -8,27 +8,14 @@ on:
       - image/**
 
 jobs:
-  params:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-    -  uses: actions/checkout@v2
-    - id: set-matrix
-      run: |
-          content=`cat ./image/config.json`
-          # the following lines are only required for multi line json
-          content="${content//'%'/'%25'}"
-          content="${content//$'\n'/'%0A'}"
-          content="${content//$'\r'/'%0D'}"
-          # end of optional handling for multi line json
-          echo "::set-output name=matrix::$content"
-
   docker:
     needs: params
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.params.outputs.matrix)}}
+      matrix: 
+        python: [3.7, 3.8, 3.9]
+        airflow: [2.1.2]
+
     steps:
       - run: echo ${{matrix.python}} ${{matrix.airflow}}
       - name: Checkout
