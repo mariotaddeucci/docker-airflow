@@ -9,7 +9,7 @@ ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
 
 WORKDIR ${AIRFLOW_HOME}
 
-COPY ./script/ .
-RUN . ./setup.sh
+COPY ./script/ ./script/
+RUN . ./script/setup.sh
 
-CMD ["python", "start.py"]
+CMD ["python", "script/start.py"]
