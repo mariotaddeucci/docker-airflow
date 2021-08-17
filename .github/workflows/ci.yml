@@ -39,5 +39,5 @@ jobs:
             --build-arg AIRFLOW='${{matrix.airflow}}' \
             --build-arg PYTHON_V=${{matrix.python}} \
             --no-cache .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
+        # docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
         working-directory: image
