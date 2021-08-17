@@ -5,10 +5,11 @@ FROM python:$PYTHON_V
 
 ENV AIRFLOW_HOME=/
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
+ENV AIRFLOW_VERSION=${AIRFLOW_V}
 
 WORKDIR ${AIRFLOW_HOME}
 
 COPY ./script/ .
-RUN . ./setup.sh $AIRFLOW_V
+RUN . ./setup.sh
 
 CMD ["python", "start.py"]
