@@ -1,11 +1,16 @@
 name: CI Build
 
 on:
-  pull_request:
+  push:
     branches:
       - 'master'
     paths:
       - 'image/**'
+
+concurrency:
+  group: docker-hub
+  cancel-in-progress: true
+
 
 jobs:
   params:
@@ -17,11 +22,9 @@ jobs:
     - id: set-matrix
       run: |
         content=`cat ./image/config.json`
-        # the following lines are only required for multi line json
         content="${content//'%'/'%25'}"
         content="${content//$'\n'/'%0A'}"
         content="${content//$'\r'/'%0D'}"
-        # end of optional handling for multi line json
         echo "::set-output name=matrix::$content"
 
   docker:
@@ -53,5 +56,5 @@ jobs:
             --build-arg PYTHON_V=${{matrix.python}} \
             --build-arg AIRFLOW_VERSION='${{matrix.airflow}}' \
             --no-cache .
-        # docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
         working-directory: image
