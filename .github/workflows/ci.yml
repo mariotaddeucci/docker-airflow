@@ -1,7 +1,7 @@
 name: CI Build
 
 on:
-  push:
+  pull_request:
     branches:
       - 'master'
     paths:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix: 
         python: [3.7, 3.8, 3.9]
-
+        airflow: [2.1.2]
     steps:
       - run: echo ${{matrix.python}} ${{matrix.airflow}}
       - name: Checkout
@@ -35,8 +35,9 @@ jobs:
       - name: Build and push
         run: |
           docker build \
-            --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}} \
+            --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}} \
             --build-arg PYTHON_V=${{matrix.python}} \
+            --build-arg AIRFLOW_V=${{matrix.airflow}} \
             --no-cache .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
         working-directory: image
