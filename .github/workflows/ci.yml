@@ -36,7 +36,6 @@ jobs:
         run: |
           docker build \
             --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}} \
-            --build-arg AIRFLOW='${{matrix.airflow}}' \
             --build-arg PYTHON_V=${{matrix.python}} \
             --no-cache .
         # docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
