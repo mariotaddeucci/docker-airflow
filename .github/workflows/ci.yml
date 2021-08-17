@@ -7,18 +7,35 @@ on:
     paths:
       - 'image/**'
 
+concurrency:
+  group: docker-hub
+  cancel-in-progress: true
+
+
 jobs:
+  params:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        content=`cat ./image/config.json`
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        echo "::set-output name=matrix::$content"
+
   docker:
-    name: "Publish image to Docker HUB"
+    name: "Push to Docker HUB"
+    needs: params
     runs-on: ubuntu-latest
     strategy:
-      matrix: 
-        python: [3.7, 3.8, 3.9]
-
+      matrix: ${{fromJson(needs.params.outputs.matrix)}}
     steps:
       - run: echo ${{matrix.python}} ${{matrix.airflow}}
-      - name: Checkout
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -35,8 +52,9 @@ jobs:
       - name: Build and push
         run: |
           docker build \
-            --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}} \
+            --tag ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}} \
             --build-arg PYTHON_V=${{matrix.python}} \
+            --build-arg AIRFLOW_VERSION='${{matrix.airflow}}' \
             --no-cache .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:2.1.2-py${{matrix.python}}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
         working-directory: image
