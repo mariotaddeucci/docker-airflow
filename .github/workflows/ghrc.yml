@@ -1,0 +1,60 @@
+name: CI Build
+
+on:
+  push:
+    branches:
+      - 'master'
+
+concurrency:
+  group: docker-ghrc
+  cancel-in-progress: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+
+jobs:
+  params:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v2
+    - id: set-matrix
+      run: |
+        content=`cat ./image/config.json`
+        content="${content//'%'/'%25'}"
+        content="${content//$'\n'/'%0A'}"
+        content="${content//$'\r'/'%0D'}"
+        echo "::set-output name=matrix::$content"
+
+  docker:
+    name: "Push to Docker HUB"
+    needs: params
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{fromJson(needs.params.outputs.matrix)}}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: image/.
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
+          build_args:
+            AIRFLOW_VERSION: ${{ matrix.airflow }}
+            PYTHON_V: ${{ matrix.python }}
