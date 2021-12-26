@@ -15,29 +15,15 @@ env:
 
 
 jobs:
-  params:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-    - uses: actions/checkout@v2
-    - id: set-matrix
-      run: |
-        content=`cat ./image/config.json`
-        content="${content//'%'/'%25'}"
-        content="${content//$'\n'/'%0A'}"
-        content="${content//$'\r'/'%0D'}"
         echo "::set-output name=matrix::$content"
-
   docker:
-    name: "Push to Docker HUB"
-    needs: params
+    name: "Push to GHRC"
     runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{fromJson(needs.params.outputs.matrix)}}
+
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -54,7 +40,4 @@ jobs:
         with:
           context: image/.
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
-          build-args:
-            AIRFLOW_VERSION: ${{ matrix.airflow }}
-            PYTHON_V: ${{ matrix.python }}
+          tags: airflow:latest
