@@ -15,9 +15,7 @@ env:
 
 
 jobs:
-        echo "::set-output name=matrix::$content"
   docker:
-    name: "Push to GHRC"
     runs-on: ubuntu-latest
 
     permissions:
