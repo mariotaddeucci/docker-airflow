@@ -55,6 +55,6 @@ jobs:
           context: image/.
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/airflow:${{matrix.airflow}}-py${{matrix.python}}
-          build_args:
+          build-args:
             AIRFLOW_VERSION: ${{ matrix.airflow }}
             PYTHON_V: ${{ matrix.python }}
